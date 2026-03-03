@@ -70,7 +70,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateFuelRow = (id: string, field: string, value: any) => {
     onFuelChange(
       fuelRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
@@ -78,7 +82,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateIncomeRow = (id: string, field: string, value: any) => {
     onIncomeChange(
       incomeRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
@@ -86,7 +94,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateDebtsRow = (id: string, field: string, value: any) => {
     onDebtsChange(
       debtsRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
