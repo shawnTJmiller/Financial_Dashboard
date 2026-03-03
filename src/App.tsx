@@ -8,7 +8,7 @@ import {
   getGaugeVisibility,
   GaugeValues,
 } from './utils/calculations';
-import { hasDefaultNewRow, isDefaultRow } from './utils/validation';
+import { hasDefaultNewRow } from './utils/validation';
 
 export default function App() {
   const [fuelRows, setFuelRows] = useState<TableRow[]>([
@@ -72,30 +72,76 @@ export default function App() {
 
   // Check warnings for default rows
   const handleFuelChange = (newRows: TableRow[]) => {
-    if (hasDefaultNewRow(newRows) && newRows.some(r => r.id !== newRows.find(d => isDefaultRow(d))?.id && isDefaultRow(r))) {
-      setShowFuelWarning(true);
-    } else {
-      setShowFuelWarning(false);
-    }
+    // Clear warning when rows are updated (user edited a row)
+    setShowFuelWarning(false);
     setFuelRows(newRows);
   };
 
   const handleIncomeChange = (newRows: TableRow[]) => {
-    if (hasDefaultNewRow(newRows) && newRows.some(r => r.id !== newRows.find(d => isDefaultRow(d))?.id && isDefaultRow(r))) {
-      setShowIncomeWarning(true);
-    } else {
-      setShowIncomeWarning(false);
-    }
+    // Clear warning when rows are updated (user edited a row)
+    setShowIncomeWarning(false);
     setIncomeRows(newRows);
   };
 
   const handleDebtsChange = (newRows: TableRow[]) => {
-    if (hasDefaultNewRow(newRows) && newRows.some(r => r.id !== newRows.find(d => isDefaultRow(d))?.id && isDefaultRow(r))) {
-      setShowDebtsWarning(true);
-    } else {
-      setShowDebtsWarning(false);
-    }
+    // Clear warning when rows are updated (user edited a row)
+    setShowDebtsWarning(false);
     setDebtsRows(newRows);
+  };
+
+  // Add row callbacks - only add if no default row exists, otherwise show warning
+  const handleFuelAddClick = () => {
+    if (hasDefaultNewRow(fuelRows)) {
+      setShowFuelWarning(true);
+      return;
+    }
+    setShowFuelWarning(false);
+    setFuelRows([
+      ...fuelRows,
+      {
+        id: Date.now().toString(),
+        source: '',
+        type: '',
+        amount: 0,
+        notes: '',
+      },
+    ]);
+  };
+
+  const handleIncomeAddClick = () => {
+    if (hasDefaultNewRow(incomeRows)) {
+      setShowIncomeWarning(true);
+      return;
+    }
+    setShowIncomeWarning(false);
+    setIncomeRows([
+      ...incomeRows,
+      {
+        id: Date.now().toString(),
+        source: '',
+        type: '',
+        amount: 0,
+        notes: '',
+      },
+    ]);
+  };
+
+  const handleDebtsAddClick = () => {
+    if (hasDefaultNewRow(debtsRows)) {
+      setShowDebtsWarning(true);
+      return;
+    }
+    setShowDebtsWarning(false);
+    setDebtsRows([
+      ...debtsRows,
+      {
+        id: Date.now().toString(),
+        source: '',
+        type: '',
+        amount: 0,
+        notes: '',
+      },
+    ]);
   };
 
   // Get needle colors for dashboard lights
@@ -200,6 +246,9 @@ export default function App() {
               onFuelChange={handleFuelChange}
               onIncomeChange={handleIncomeChange}
               onDebtsChange={handleDebtsChange}
+              onFuelAddClick={handleFuelAddClick}
+              onIncomeAddClick={handleIncomeAddClick}
+              onDebtsAddClick={handleDebtsAddClick}
               showFuelWarning={showFuelWarning}
               showIncomeWarning={showIncomeWarning}
               showDebtsWarning={showDebtsWarning}
@@ -220,6 +269,9 @@ export default function App() {
           onFuelChange={handleFuelChange}
           onIncomeChange={handleIncomeChange}
           onDebtsChange={handleDebtsChange}
+          onFuelAddClick={handleFuelAddClick}
+          onIncomeAddClick={handleIncomeAddClick}
+          onDebtsAddClick={handleDebtsAddClick}
           showFuelWarning={showFuelWarning}
           showIncomeWarning={showIncomeWarning}
           showDebtsWarning={showDebtsWarning}

@@ -8,6 +8,9 @@ interface InputPanelProps {
   onFuelChange: (rows: TableRow[]) => void;
   onIncomeChange: (rows: TableRow[]) => void;
   onDebtsChange: (rows: TableRow[]) => void;
+  onFuelAddClick?: () => void;
+  onIncomeAddClick?: () => void;
+  onDebtsAddClick?: () => void;
   showFuelWarning?: boolean;
   showIncomeWarning?: boolean;
   showDebtsWarning?: boolean;
@@ -20,6 +23,9 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   onFuelChange,
   onIncomeChange,
   onDebtsChange,
+  onFuelAddClick,
+  onIncomeAddClick,
+  onDebtsAddClick,
   showFuelWarning = false,
   showIncomeWarning = false,
   showDebtsWarning = false,
@@ -38,42 +44,15 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   };
 
   const addFuelRow = () => {
-    onFuelChange([
-      ...fuelRows,
-      {
-        id: Date.now().toString(),
-        source: '',
-        type: '',
-        amount: 0,
-        notes: '',
-      },
-    ]);
+    onFuelAddClick?.();
   };
 
   const addIncomeRow = () => {
-    onIncomeChange([
-      ...incomeRows,
-      {
-        id: Date.now().toString(),
-        source: '',
-        type: '',
-        amount: 0,
-        notes: '',
-      },
-    ]);
+    onIncomeAddClick?.();
   };
 
   const addDebtsRow = () => {
-    onDebtsChange([
-      ...debtsRows,
-      {
-        id: Date.now().toString(),
-        source: '',
-        type: '',
-        amount: 0,
-        notes: '',
-      },
-    ]);
+    onDebtsAddClick?.();
   };
 
   const deleteFuelRow = (id: string) => {
