@@ -58,8 +58,6 @@ export const TableSection: React.FC<TableSectionProps> = ({
 
   const handleSourceChange = (id: string, source: string) => {
     onUpdateRow(id, 'source', source);
-    // Reset type when source changes
-    onUpdateRow(id, 'type', '');
   };
 
   const getTypeOptions = (rowId: string): string[] => {
@@ -128,7 +126,7 @@ export const TableSection: React.FC<TableSectionProps> = ({
                         <select
                           value={row.source || ''}
                           onChange={e => handleSourceChange(row.id, e.target.value)}
-                          className="bg-gray-700 text-gray-100 px-2 py-1 rounded text-sm w-full"
+                          className="bg-gray-700 hover:bg-gray-600 text-gray-100 px-2 py-1 rounded text-sm w-full cursor-pointer appearance-none"
                         >
                           <option value="">Select One</option>
                           {sourceOptions.map(opt => (
@@ -137,11 +135,19 @@ export const TableSection: React.FC<TableSectionProps> = ({
                             </option>
                           ))}
                         </select>
-                      ) : col === 'type' && row.source ? (
+                      ) : col === 'source' ? (
+                        <input
+                          type="text"
+                          value={row.source || ''}
+                          onChange={e => onUpdateRow(row.id, 'source', e.target.value)}
+                          placeholder="Source..."
+                          className="bg-gray-700 text-gray-100 px-2 py-1 rounded text-sm w-full"
+                        />
+                      ) : col === 'type' && row.source && getTypeOptions(row.id).length > 0 ? (
                         <select
                           value={row.type || ''}
                           onChange={e => onUpdateRow(row.id, 'type', e.target.value)}
-                          className="bg-gray-700 text-gray-100 px-2 py-1 rounded text-sm w-full"
+                          className="bg-gray-700 hover:bg-gray-600 text-gray-100 px-2 py-1 rounded text-sm w-full cursor-pointer appearance-none"
                         >
                           <option value="">Select Type</option>
                           {getTypeOptions(row.id).map(opt => (
