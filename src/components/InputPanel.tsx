@@ -70,7 +70,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateFuelRow = (id: string, field: string, value: any) => {
     onFuelChange(
       fuelRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
@@ -86,7 +90,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateDebtsRow = (id: string, field: string, value: any) => {
     onDebtsChange(
       debtsRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'amount'
+            ? { ...row, [field]: value > 0 ? -value : value }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
@@ -130,7 +138,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       <TableSection
         title="Income"
         rows={incomeRows}
-        columns={['source', 'amount', 'notes']}
+        columns={['amount', 'notes']}
         onAddRow={addIncomeRow}
         onDeleteRow={deleteIncomeRow}
         onUpdateRow={updateIncomeRow}
@@ -143,7 +151,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       <TableSection
         title="Debts"
         rows={debtsRows}
-        columns={['source', 'amount', 'notes']}
+        columns={['amount', 'notes']}
         onAddRow={addDebtsRow}
         onDeleteRow={deleteDebtsRow}
         onUpdateRow={updateDebtsRow}

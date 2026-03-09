@@ -58,8 +58,6 @@ export const TableSection: React.FC<TableSectionProps> = ({
 
   const handleSourceChange = (id: string, source: string) => {
     onUpdateRow(id, 'source', source);
-    // Reset type when source changes
-    onUpdateRow(id, 'type', '');
   };
 
   const getTypeOptions = (rowId: string): string[] => {

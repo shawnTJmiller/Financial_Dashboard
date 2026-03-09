@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { validateAmount, formatAmount, parseAmount } from '../utils/validation';
 
 interface AmountPopupProps {
@@ -19,58 +19,73 @@ export const AmountPopup: React.FC<AmountPopupProps> = ({
   const [display, setDisplay] = useState<string>(formatAmount(initialValue).replace('.00', '') || '0');
   const [error, setError] = useState<string>('');
 
+  const handleNumberClick = useCallback((num: string) => {
+    setError('');
+    let newDisplay: string;
+
+    setDisplay(prevDisplay => {
+      newDisplay = prevDisplay;
+      if (num === 'C') {
+        newDisplay = '0';
+      } else if (num === '⌫') {
+        newDisplay = prevDisplay.slice(0, -1) || '0';
+      } else if (num === '+/-') {
+        newDisplay = prevDisplay.startsWith('-') ? prevDisplay.slice(1) : '-' + prevDisplay;
+      } else if (num === '.') {
+        if (!newDisplay.includes('.')) {
+          newDisplay = newDisplay + '.';
+        }
+      } else {
+        if (newDisplay === '0' && num !== '.') {
+          newDisplay = num;
+        } else {
+          newDisplay = newDisplay + num;
+        }
+      }
+
+      const validation = validateAmount(newDisplay);
+      if (validation.valid) {
+        return newDisplay;
+      } else {
+        setError(validation.error || 'Invalid input');
+        return prevDisplay;
+      }
+    });
+  }, []);
+
+  const handleSave = useCallback(() => {
+    const parsed = parseAmount(display);
+    if (!allowNegative && parsed < 0) {
+      setError('Negative values not allowed');
+      return;
+    }
+    onSave(parsed);
+  }, [display, allowNegative, onSave]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onCancel();
       } else if (e.key === 'Enter') {
         handleSave();
-      } else if (/\d/.test(e.key) || e.key === '.' || e.key === '-' || e.key === 'Backspace') {
-        // Allow number keys, decimal, minus, backspace
-      } else {
+      } else if (/\d/.test(e.key)) {
         e.preventDefault();
+        handleNumberClick(e.key);
+      } else if (e.key === '.') {
+        e.preventDefault();
+        handleNumberClick('.');
+      } else if (e.key === '-') {
+        e.preventDefault();
+        handleNumberClick('+/-');
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleNumberClick('⌫');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [display]);
-
-  const handleNumberClick = (num: string) => {
-    setError('');
-    let newDisplay = display;
-
-    if (num === 'C') {
-      newDisplay = '0';
-    } else if (num === '⌫') {
-      newDisplay = display.slice(0, -1) || '0';
-    } else if (num === '+/-') {
-      newDisplay = display.startsWith('-') ? display.slice(1) : '-' + display;
-    } else if (num === '.') {
-      if (!newDisplay.includes('.')) {
-        newDisplay = newDisplay + '.';
-      }
-    } else {
-      if (newDisplay === '0' && num !== '.') {
-        newDisplay = num;
-      } else {
-        newDisplay = newDisplay + num;
-      }
-    }
-
-    const validation = validateAmount(newDisplay);
-    if (validation.valid) {
-      setDisplay(newDisplay);
-    } else {
-      setError(validation.error || 'Invalid input');
-    }
-  };
-
-  const handleSave = () => {
-    const parsed = parseAmount(display);
-    if (!allowNegative && parsed < 0) {
-      setError('Negative values not allowed');
-      return;
+  }, [handleNumberClick, handleSave, onCancel]);
     }
     onSave(parsed);
   };

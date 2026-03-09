@@ -49,7 +49,7 @@ export default function App() {
   // Convert rows to calculation format
   const fuelCalcRows = fuelRows.map(row => ({
     source: (row.source || '') as 'Bank' | 'Investment' | 'Other' | '',
-    type: row.type,
+    type: row.type || '',
     amount: row.amount,
     notes: row.notes,
   }));
