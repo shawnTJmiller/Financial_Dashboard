@@ -82,7 +82,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   const updateIncomeRow = (id: string, field: string, value: any) => {
     onIncomeChange(
       incomeRows.map(row =>
-        row.id === id ? { ...row, [field]: value } : row
+        row.id === id
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+            : { ...row, [field]: value }
+          : row
       )
     );
   };
@@ -91,8 +95,13 @@ export const InputPanel: React.FC<InputPanelProps> = ({
     onDebtsChange(
       debtsRows.map(row =>
         row.id === id
+<<<<<<< HEAD
           ? field === 'amount'
             ? { ...row, [field]: value > 0 ? -value : value }
+=======
+          ? field === 'source'
+            ? { ...row, [field]: value, type: '' }
+>>>>>>> 003a886f174b940e556e33b975095bf7f21e5daa
             : { ...row, [field]: value }
           : row
       )
