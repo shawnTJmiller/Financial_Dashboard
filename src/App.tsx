@@ -335,14 +335,14 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Income Gauge (positions 13-16, 23-26, 33-36, 43-46) */}
-      <div style={{ gridColumn: '4 / span 4', gridRow: '1 / span 4' }}>
+      <div style={{ gridColumn: '3 / span 4', gridRow: '1 / span 4' }}>
         <Gauge
           min={-50000}
           max={100000}
           value={gaugeValues.income}
           label="Net Income"
           visible={gaugeVisibility.income}
-          size={200}
+          size={400}
         />
       </div>
 
@@ -383,7 +383,7 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Car Gauge (positions 27,28,37,38) */}
-      <div style={{ gridColumn: '3 / span 2', gridRow: '3 / span 2' }}>
+      <div style={{ gridColumn: '7 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
           max={30000}
@@ -407,7 +407,7 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* School Gauge (positions 47,48,57,58) */}
-      <div style={{ gridColumn: '5 / span 2', gridRow: '5 / span 2' }}>
+      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={50000}
@@ -419,7 +419,7 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Other 1 Gauge (positions 29,30,39,40) */}
-      <div style={{ gridColumn: '3 / span 2', gridRow: '5 / span 2' }}>
+      <div style={{ gridColumn: '9 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
           max={50000}
@@ -431,7 +431,7 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Other 2 Gauge (positions 49,50,59,60) */}
-      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
+      <div style={{ gridColumn: '9 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={50000}
