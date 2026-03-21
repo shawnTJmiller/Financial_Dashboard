@@ -107,13 +107,13 @@ Grid-based layout (10×7) with gauges:
 #### Tier-Based Allocation
 The system uses tier-based allocation for fuel distribution:
 
-- **Tier ≥ $50,000**: All gauges funded
-- **Tier > $40,000**: All except overflow to Other Gauge 2
-- **Tier > $30,000**: All except overflow to Other Gauge 1
-- **Tier > $25,000**: All except overflow to Vacation
-- **Tier > $20,000**: All except overflow to Car
-- **Tier > $10,000**: All except overflow to Home
 - **Tier ≤ $10,000**: Savings only
+- **Tier > $10,000**: Savings with overflow to Home
+- **Tier > $20,000**: Savings & Home with overflow to Car
+- **Tier > $25,000**: Savings, Home & Car with overflow to Vacation
+- **Tier > $30,000**: All with overflow to Other Gauge 1
+- **Tier > $40,000**: All with overflow to Other Gauge 2
+- **Tier ≥ $50,000**: All gauges funded
 
 #### Investment Categorization
 

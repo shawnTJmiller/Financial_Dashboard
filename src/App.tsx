@@ -326,7 +326,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '1 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.savings}
           label="Savings"
           visible={gaugeVisibility.savings}
@@ -350,7 +350,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '9 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={20000}
+          max={5000}
           value={gaugeValues.vacation}
           label="Vacation"
           visible={gaugeVisibility.vacation}
@@ -362,7 +362,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '1 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={100000}
+          max={1000000}
           value={gaugeValues.retirement}
           label="Retirement"
           visible={gaugeVisibility.retirement}
@@ -374,7 +374,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '7 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.home}
           label="Home"
           visible={gaugeVisibility.home}
@@ -386,7 +386,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '7 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={30000}
+          max={5000}
           value={gaugeValues.car}
           label="Car"
           visible={gaugeVisibility.car}
@@ -398,7 +398,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '1 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.medical}
           label="Medical"
           visible={gaugeVisibility.medical}
@@ -422,7 +422,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '9 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.otherGauge1}
           label="Other 1"
           visible={gaugeVisibility.otherGauge1}
@@ -434,7 +434,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '9 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.otherGauge2}
           label="Other 2"
           visible={gaugeVisibility.otherGauge2}
