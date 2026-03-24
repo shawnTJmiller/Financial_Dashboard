@@ -82,7 +82,7 @@ export const Gauge: React.FC<GaugeProps> = ({
           '$' + config.minSavings.toLocaleString(),
           left + config.leftTextAdjustment,
           yCoord + config.verticalTextAdjustmentForMinMaxLabels,
-          20,
+          config.minMaxFontSize,
           'top',
           'left'
         );
@@ -90,7 +90,7 @@ export const Gauge: React.FC<GaugeProps> = ({
           '$' + maxLabel.toLocaleString(),
           right + config.rightTextAdjustment,
           yCoord + config.verticalTextAdjustmentForMinMaxLabels,
-          20,
+          config.minMaxFontSize,
           'top',
           'right'
         );
@@ -98,7 +98,7 @@ export const Gauge: React.FC<GaugeProps> = ({
           '$' + clampedValue.toLocaleString(),
           xCoord,
           yCoord + config.verticalTextAdjustmentForCurrentSavingsLabel,
-          45,
+          config.currentValueFontSize,
           'top',
           'center'
         );
