@@ -208,31 +208,7 @@ export default function App() {
     },
   ];
 
-  // Grid layout configuration: 10 columns x 7 rows
-  const gridItems = [
-    // Financial Fuel Gauge: 1,2,11,12
-    { pos: 1, label: 'Savings', rows: 2, cols: 2 },
-    // Retirement Gauge: 21,22,31,32
-    { pos: 21, label: 'Retirement', rows: 2, cols: 2 },
-    // Medical Gauge: 41,42,51,52
-    { pos: 41, label: 'Medical', rows: 2, cols: 2 },
-    // Income Tachometer: 13-16, 23-26, 33-36, 43-46 (4x4)
-    { pos: 13, label: 'Income', rows: 4, cols: 4 },
-    // Home Gauge: 7,8,17,18
-    { pos: 7, label: 'Home', rows: 2, cols: 2 },
-    // Car Gauge: 27,28,37,38
-    { pos: 27, label: 'Car', rows: 2, cols: 2 },
-    // School Gauge: 47,48,57,58
-    { pos: 47, label: 'School', rows: 2, cols: 2 },
-    // Vacation Gauge: 9,10,19,20
-    { pos: 9, label: 'Vacation', rows: 2, cols: 2 },
-    // Other Gauge #1: 29,30,39,40
-    { pos: 29, label: 'Other 1', rows: 2, cols: 2 },
-    // Other Gauge #2: 49,50,59,60
-    { pos: 49, label: 'Other 2', rows: 2, cols: 2 },
-    // Dashboard Lights: 61–70
-    { pos: 61, label: 'Lights', rows: 1, cols: 10 },
-  ];
+
 
   const renderLayoutContent = () => {
     if (panelPosition === 'left') {
@@ -311,11 +287,7 @@ const OutputGrid: React.FC<{
   dashboardLights: any[];
 }> = ({ gaugeValues, gaugeVisibility, dashboardLights }) => {
   // Helper to convert grid position (1-70) to CSS grid row/col
-  const getGridPosition = (pos: number) => {
-    const row = Math.floor((pos - 1) / 10) + 1;
-    const col = ((pos - 1) % 10) + 1;
-    return { row, col };
-  };
+
 
   return (
     <div className="grid gap-4 p-4" style={{

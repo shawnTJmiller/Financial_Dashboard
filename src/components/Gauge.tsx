@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Chart as ChartJS, DoughnutController, ArcElement, Tooltip, Plugin } from 'chart.js';
+import { getGaugeConfig } from '../utils/gaugeConfig';
+
+// Register Chart.js components
+ChartJS.register(DoughnutController, ArcElement, Tooltip);
 
 interface GaugeProps {
   min: number;
   max: number;
   value: number;
   label: string;
-  startAngle?: number;
-  radialSpan?: number;
-  colorRangeMin?: number;
-  colorRangeMax?: number;
   visible: boolean;
   size?: number;
 }
@@ -18,126 +19,146 @@ export const Gauge: React.FC<GaugeProps> = ({
   max,
   value,
   label,
-  startAngle = -225,
-  radialSpan = 270,
-  colorRangeMin,
-  colorRangeMax,
   visible,
   size = 200,
 }) => {
   if (!visible) return null;
 
-  // Clamp value between min and max
-  const clampedValue = Math.max(min, Math.min(max, value));
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const chartRef = useRef<any>(null);
+  const config = getGaugeConfig(label);
 
-  // Calculate needle angle
-  const proportion = (clampedValue - min) / (max - min);
-  const needleAngle = startAngle + proportion * radialSpan;
+  useEffect(() => {
+    if (!canvasRef.current) return;
 
-  // Convert to radians
-  const needleRad = (needleAngle * Math.PI) / 180;
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
 
-  // Calculate needle position
-  const radius = size / 2.5;
-  const needleX = Math.cos(needleRad) * radius;
-  const needleY = Math.sin(needleRad) * radius;
-
-  // Determine color based on position
-  let needleColor = '#ef4444'; // red
-  if (colorRangeMin !== undefined && colorRangeMax !== undefined) {
-    if (clampedValue >= colorRangeMax) {
-      needleColor = '#22c55e'; // green
-    } else if (clampedValue >= colorRangeMin) {
-      // Gradient between min and max
-      const gradientProp = (clampedValue - colorRangeMin) / (colorRangeMax - colorRangeMin);
-      const r = Math.round(239 + (34 - 239) * gradientProp);
-      const g = Math.round(68 + (197 - 68) * gradientProp);
-      const b = Math.round(68 + (85 - 68) * gradientProp);
-      needleColor = `rgb(${r}, ${g}, ${b})`;
+    // Destroy previous chart if it exists
+    if (chartRef.current) {
+      chartRef.current.destroy();
     }
-  } else {
-    // Default gradient: red -> yellow -> green
-    if (proportion < 0.5) {
-      const gradientProp = proportion * 2;
-      const r = 239;
-      const g = Math.round(68 + (234 - 68) * gradientProp);
-      const b = 68;
-      needleColor = `rgb(${r}, ${g}, ${b})`;
-    } else {
-      const gradientProp = (proportion - 0.5) * 2;
-      const r = Math.round(239 - (239 - 34) * gradientProp);
-      const g = 234;
-      const b = Math.round(68 + (85 - 68) * gradientProp);
-      needleColor = `rgb(${r}, ${g}, ${b})`;
+
+    // Clamp value between min and max
+    const clampedValue = Math.max(min, Math.min(max, value));
+    const maxLabel = clampedValue > config.maxSavings ? clampedValue : config.maxSavings;
+
+    // Calculate color stops
+    let yellowColorStop = config.baseYellowColorStop;
+    let greenColorStop = config.baseGreenColorStop;
+
+    if (clampedValue > config.maxSavings) {
+      yellowColorStop *= (config.maxSavings / clampedValue) * config.baseYellowColorStop;
+      greenColorStop = (config.maxSavings / clampedValue) * config.baseGreenColorStop;
     }
-  }
 
-  // Draw arc path
-  const arcStartRad = (startAngle * Math.PI) / 180;
-  const arcStartX = Math.cos(arcStartRad) * radius;
-  const arcStartY = Math.sin(arcStartRad) * radius;
+    // Create gradient
+    const chartWidth = canvasRef.current.getBoundingClientRect().width;
+    const gradientSegment = ctx.createLinearGradient(0, 0, chartWidth - 46, 0);
+    gradientSegment.addColorStop(0, 'red');
+    gradientSegment.addColorStop(yellowColorStop, 'yellow');
+    gradientSegment.addColorStop(greenColorStop, 'green');
 
-  const arcEndX = Math.cos(needleRad) * radius;
-  const arcEndY = Math.sin(needleRad) * radius;
+    // Create custom plugin for text labels
+    const gaugeChartText: Plugin = {
+      id: 'gaugeChartText',
+      afterDatasetsDraw(chart) {
+        const { ctx, chartArea: { left, right } } = chart as any;
+        ctx.save();
 
-  const largeArc = radialSpan > 180 ? 1 : 0;
+        const xCoord = (chart as any).getDatasetMeta(0).data[0].x;
+        const yCoord = (chart as any).getDatasetMeta(0).data[0].y;
 
-  const arcPath = `M ${size / 2 + arcStartX} ${size / 2 + arcStartY} A ${radius} ${radius} 0 ${largeArc} 1 ${size / 2 + arcEndX} ${size / 2 + arcEndY}`;
+        function textLabel(text: string | number, x: number, y: number, fontSize: number, textBaseline: string, textAlign: string) {
+          ctx.font = `${fontSize}px sans-serif`;
+          ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+          ctx.textBaseline = textBaseline;
+          ctx.textAlign = textAlign;
+          ctx.fillText(text.toLocaleString(), x, y);
+        }
+
+        // Draw min/max labels and current value
+        textLabel(
+          '$' + config.minSavings.toLocaleString(),
+          left + config.leftTextAdjustment,
+          yCoord + config.verticalTextAdjustmentForMinMaxLabels,
+          20,
+          'top',
+          'left'
+        );
+        textLabel(
+          '$' + maxLabel.toLocaleString(),
+          right + config.rightTextAdjustment,
+          yCoord + config.verticalTextAdjustmentForMinMaxLabels,
+          20,
+          'top',
+          'right'
+        );
+        textLabel(
+          '$' + clampedValue.toLocaleString(),
+          xCoord,
+          yCoord + config.verticalTextAdjustmentForCurrentSavingsLabel,
+          45,
+          'top',
+          'center'
+        );
+
+        ctx.restore();
+      },
+    };
+
+    const chartData = {
+      labels: ['Money Reserve', 'To Goal'],
+      datasets: [
+        {
+          data: [clampedValue, Math.max(0, config.maxSavings - clampedValue)],
+          backgroundColor: [gradientSegment, 'rgba(0, 0, 0, 0.2)'],
+          borderColor: [gradientSegment, 'rgba(0, 0, 0, 1)'],
+          borderWidth: 0,
+        },
+      ],
+    };
+
+    const chartConfig = {
+      type: 'doughnut' as const,
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        circumference: config.baseCircumference,
+        rotation: config.baseRotation,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: true,
+          },
+        },
+      },
+      plugins: [gaugeChartText],
+    };
+
+    chartRef.current = new ChartJS(ctx, chartConfig);
+
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+    };
+  }, [value, label, min, max, config, visible]);
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="bg-gray-800 rounded-full">
-        {/* Background circle */}
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#404040" strokeWidth="2" />
-
-        {/* Gauge arc (colored) */}
-        <path d={arcPath} fill="none" stroke={needleColor} strokeWidth="3" strokeLinecap="round" />
-
-        {/* Needle */}
-        <line
-          x1={size / 2}
-          y1={size / 2}
-          x2={size / 2 + needleX}
-          y2={size / 2 + needleY}
-          stroke={needleColor}
-          strokeWidth="2"
-          strokeLinecap="round"
+      <div style={{ width: '100%', height: `${size}px`, position: 'relative' }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: 'block',
+          }}
         />
-
-        {/* Center circle */}
-        <circle cx={size / 2} cy={size / 2} r="6" fill={needleColor} />
-
-        {/* Min/Max labels */}
-        <text
-          x={size / 2 + Math.cos(arcStartRad) * radius * 1.3}
-          y={size / 2 + Math.sin(arcStartRad) * radius * 1.3}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="text-xs fill-gray-500 font-mono"
-        >
-          {min}
-        </text>
-        <text
-          x={size / 2 + Math.cos(needleRad + (radialSpan * Math.PI) / 180) * radius * 1.3}
-          y={size / 2 + Math.sin(needleRad + (radialSpan * Math.PI) / 180) * radius * 1.3}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="text-xs fill-gray-500 font-mono"
-        >
-          {max}
-        </text>
-
-        {/* Current value */}
-        <text
-          x={size / 2}
-          y={size / 2 + size / 3}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="text-sm fill-gray-300 font-bold"
-        >
-          ${clampedValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        </text>
-      </svg>
+      </div>
       <p className="mt-2 text-sm font-semibold text-gray-200 text-center">{label}</p>
     </div>
   );
