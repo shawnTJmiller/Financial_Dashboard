@@ -330,8 +330,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Retirement Gauge (positions 21,22,31,32) */}
-      <div style={{ gridColumn: '1 / span 2', gridRow: '3 / span 2' }}>
+      {/* Retirement Gauge (positions 29,30,39,40) */}
+      <div style={{ gridColumn: '9 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
           max={1000000}
@@ -366,8 +366,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Medical Gauge (positions 41,42,51,52) */}
-      <div style={{ gridColumn: '1 / span 2', gridRow: '5 / span 2' }}>
+      {/* Medical Gauge (positions 47,48,57,58) */}
+      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={10000}
@@ -378,8 +378,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* School Gauge (positions 47,48,57,58) */}
-      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
+      {/* School Gauge (positions 49,50,59,60) */}
+      <div style={{ gridColumn: '9 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={50000}
@@ -390,8 +390,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Other 1 Gauge (positions 29,30,39,40) */}
-      <div style={{ gridColumn: '9 / span 2', gridRow: '3 / span 2' }}>
+      {/* Other 1 Gauge (positions 21,22,31,32) */}
+      <div style={{ gridColumn: '1 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
           max={10000}
@@ -402,8 +402,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Other 2 Gauge (positions 49,50,59,60) */}
-      <div style={{ gridColumn: '9 / span 2', gridRow: '5 / span 2' }}>
+      {/* Other 2 Gauge (positions 41,42,51,52) */}
+      <div style={{ gridColumn: '1 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={10000}
