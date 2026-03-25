@@ -6,6 +6,9 @@ import { TableRow } from './components/TableSection';
 import {
   calculateAllGauges,
   getGaugeVisibility,
+  getLightColor,
+  getIncomeColor,
+  getShouldFlash,
   GaugeValues,
 } from './utils/calculations';
 import { hasDefaultNewRow } from './utils/validation';
@@ -145,22 +148,12 @@ export default function App() {
   };
 
   // Get needle colors for dashboard lights
-  const getLightColor = (value: number, max: number): string => {
-    const proportion = value / max;
-    if (proportion < 0.5) {
-      return '#ef4444'; // red
-    } else if (proportion < 0.8) {
-      return '#eab308'; // yellow
-    }
-    return '#22c55e'; // green
-  };
-
   const dashboardLights = [
     {
       label: 'Savings',
       color: gaugeValues.savings >= 10000 ? '#22c55e' : getLightColor(gaugeValues.savings, 10000),
       visible: gaugeVisibility.savings,
-      shouldFlash: gaugeValues.savings < 0,
+      shouldFlash: getShouldFlash(gaugeValues.savings),
     },
     {
       label: 'Retirement',
@@ -174,9 +167,9 @@ export default function App() {
     },
     {
       label: 'Income',
-      color: gaugeValues.income >= 3000 ? '#22c55e' : gaugeValues.income >= 1500 ? '#eab308' : '#ef4444',
+      color: getIncomeColor(gaugeValues.income),
       visible: gaugeVisibility.income,
-      shouldFlash: gaugeValues.income < 0,
+      shouldFlash: getShouldFlash(gaugeValues.income),
     },
     {
       label: 'Home',
