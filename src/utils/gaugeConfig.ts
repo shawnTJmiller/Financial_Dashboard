@@ -158,7 +158,7 @@ export const gaugeConfigs: Record<string, GaugeConfig> = {
   'Savings': {
     label: 'Savings',
     minSavings: 0,
-    maxSavings: 10000,
+    maxSavings: 100000,
     baseCircumference: 270,
     baseRotation: 225,
     baseYellowColorStop: 0.5,

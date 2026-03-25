@@ -41,15 +41,36 @@ export const Gauge: React.FC<GaugeProps> = ({
 
     // Clamp value between min and max
     const clampedValue = Math.max(min, Math.min(max, value));
-    const maxLabel = clampedValue > config.maxSavings ? clampedValue : config.maxSavings;
+    
+    // Special handling for Savings gauge - dynamically adjust max when savings exceeds default
+    let displayMax: number;
+    let displayValue: number;
+    
+    if (label === 'Savings') {
+      // For Savings gauge, default max is always 10000 unless value exceeds it
+      const savingsDefaultMax = 10000;
+      if (value > savingsDefaultMax) {
+        displayMax = value;
+        displayValue = value;
+      } else {
+        displayMax = savingsDefaultMax;
+        displayValue = clampedValue;
+      }
+    } else {
+      // For all other gauges, use config values
+      displayMax = config.maxSavings;
+      displayValue = clampedValue;
+    }
+    
+    const maxLabel = displayValue > displayMax ? displayValue : displayMax;
 
     // Calculate color stops
     let yellowColorStop = config.baseYellowColorStop;
     let greenColorStop = config.baseGreenColorStop;
 
-    if (clampedValue > config.maxSavings) {
-      yellowColorStop *= (config.maxSavings / clampedValue) * config.baseYellowColorStop;
-      greenColorStop = (config.maxSavings / clampedValue) * config.baseGreenColorStop;
+    if (displayValue > displayMax) {
+      yellowColorStop *= (displayMax / displayValue) * config.baseYellowColorStop;
+      greenColorStop = (displayMax / displayValue) * config.baseGreenColorStop;
     }
 
     // Create gradient
@@ -95,7 +116,7 @@ export const Gauge: React.FC<GaugeProps> = ({
           'right'
         );
         textLabel(
-          '$' + clampedValue.toLocaleString(),
+          '$' + displayValue.toLocaleString(),
           xCoord,
           yCoord + config.verticalTextAdjustmentForCurrentSavingsLabel,
           config.currentValueFontSize,
@@ -111,7 +132,7 @@ export const Gauge: React.FC<GaugeProps> = ({
       labels: ['Money Reserve', 'To Goal'],
       datasets: [
         {
-          data: [clampedValue, Math.max(0, config.maxSavings - clampedValue)],
+          data: [displayValue, Math.max(0, displayMax - displayValue)],
           backgroundColor: [gradientSegment, 'rgba(0, 0, 0, 0.2)'],
           borderColor: [gradientSegment, 'rgba(0, 0, 0, 1)'],
           borderWidth: 0,
