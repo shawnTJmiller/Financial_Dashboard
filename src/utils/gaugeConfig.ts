@@ -142,7 +142,7 @@ export const gaugeConfigs: Record<string, GaugeConfig> = {
   },
   'Net Income': {
     label: 'Net Income',
-    minSavings: -2000,
+    minSavings: 0,
     maxSavings: 10000,
     baseCircumference: 270,
     baseRotation: 225,
@@ -158,7 +158,7 @@ export const gaugeConfigs: Record<string, GaugeConfig> = {
   'Savings': {
     label: 'Savings',
     minSavings: 0,
-    maxSavings: 100000,
+    maxSavings: 10000,
     baseCircumference: 270,
     baseRotation: 225,
     baseYellowColorStop: 0.5,
