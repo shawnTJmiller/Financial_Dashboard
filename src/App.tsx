@@ -6,6 +6,9 @@ import { TableRow } from './components/TableSection';
 import {
   calculateAllGauges,
   getGaugeVisibility,
+  getLightColor,
+  getIncomeColor,
+  getShouldFlash,
   GaugeValues,
 } from './utils/calculations';
 import { hasDefaultNewRow } from './utils/validation';
@@ -145,45 +148,37 @@ export default function App() {
   };
 
   // Get needle colors for dashboard lights
-  const getLightColor = (value: number, max: number): string => {
-    const proportion = value / max;
-    if (proportion < 0.5) {
-      return '#ef4444'; // red
-    } else if (proportion < 0.8) {
-      return '#eab308'; // yellow
-    }
-    return '#22c55e'; // green
-  };
-
   const dashboardLights = [
     {
       label: 'Savings',
-      color: getLightColor(gaugeValues.savings, 100000),
+      color: gaugeValues.savings >= 10000 ? '#22c55e' : getLightColor(gaugeValues.savings, 10000),
       visible: gaugeVisibility.savings,
+      shouldFlash: getShouldFlash(gaugeValues.savings),
     },
     {
       label: 'Retirement',
-      color: getLightColor(gaugeValues.retirement, 100000),
+      color: getLightColor(gaugeValues.retirement, 1000000),
       visible: gaugeVisibility.retirement,
     },
     {
       label: 'Medical',
-      color: getLightColor(gaugeValues.medical, 50000),
+      color: getLightColor(gaugeValues.medical, 10000),
       visible: gaugeVisibility.medical,
     },
     {
       label: 'Income',
-      color: gaugeValues.income >= 0 ? '#22c55e' : '#ef4444',
+      color: getIncomeColor(gaugeValues.income),
       visible: gaugeVisibility.income,
+      shouldFlash: getShouldFlash(gaugeValues.income),
     },
     {
       label: 'Home',
-      color: getLightColor(gaugeValues.home, 50000),
+      color: getLightColor(gaugeValues.home, 10000),
       visible: gaugeVisibility.home,
     },
     {
       label: 'Car',
-      color: getLightColor(gaugeValues.car, 30000),
+      color: getLightColor(gaugeValues.car, 5000),
       visible: gaugeVisibility.car,
     },
     {
@@ -193,17 +188,17 @@ export default function App() {
     },
     {
       label: 'Vacation',
-      color: getLightColor(gaugeValues.vacation, 20000),
+      color: getLightColor(gaugeValues.vacation, 5000),
       visible: gaugeVisibility.vacation,
     },
     {
       label: 'Other 1',
-      color: getLightColor(gaugeValues.otherGauge1, 50000),
+      color: getLightColor(gaugeValues.otherGauge1, 10000),
       visible: gaugeVisibility.otherGauge1,
     },
     {
       label: 'Other 2',
-      color: getLightColor(gaugeValues.otherGauge2, 50000),
+      color: getLightColor(gaugeValues.otherGauge2, 10000),
       visible: gaugeVisibility.otherGauge2,
     },
   ];

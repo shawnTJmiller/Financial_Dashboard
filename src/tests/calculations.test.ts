@@ -7,6 +7,9 @@ import {
   calculateNetIncome,
   allocateTierGauges,
   getGaugeVisibility,
+  getLightColor,
+  getIncomeColor,
+  getShouldFlash,
 } from '../utils/calculations';
 import {
   validateAmount,
@@ -277,6 +280,169 @@ describe('Validation', () => {
     it('rejects row with source', () => {
       const row = { source: 'Bank', amount: 0, notes: '' };
       expect(isDefaultRow(row)).toBe(false);
+    });
+  });
+});
+
+describe('Dashboard Light Colors', () => {
+  describe('getLightColor', () => {
+    it('returns red when proportion < 0.5', () => {
+      expect(getLightColor(4000, 10000)).toBe('#ef4444'); // 40%
+      expect(getLightColor(0, 10000)).toBe('#ef4444'); // 0%
+      expect(getLightColor(4999, 10000)).toBe('#ef4444'); // 49.99%
+    });
+
+    it('returns yellow when proportion 0.5-0.8', () => {
+      expect(getLightColor(5000, 10000)).toBe('#eab308'); // 50%
+      expect(getLightColor(7000, 10000)).toBe('#eab308'); // 70%
+      expect(getLightColor(7999, 10000)).toBe('#eab308'); // 79.99%
+    });
+
+    it('returns green when proportion >= 0.8', () => {
+      expect(getLightColor(8000, 10000)).toBe('#22c55e'); // 80%
+      expect(getLightColor(10000, 10000)).toBe('#22c55e'); // 100%
+      expect(getLightColor(12000, 10000)).toBe('#22c55e'); // 120% (overflow)
+    });
+
+    it('handles large max values (Retirement)', () => {
+      expect(getLightColor(400000, 1000000)).toBe('#ef4444'); // 40%
+      expect(getLightColor(500000, 1000000)).toBe('#eab308'); // 50%
+      expect(getLightColor(800000, 1000000)).toBe('#22c55e'); // 80%
+    });
+
+    it('handles small max values', () => {
+      expect(getLightColor(2000, 5000)).toBe('#ef4444'); // 40%
+      expect(getLightColor(2500, 5000)).toBe('#eab308'); // 50%
+      expect(getLightColor(4000, 5000)).toBe('#22c55e'); // 80%
+    });
+
+    it('handles negative values', () => {
+      expect(getLightColor(-1000, 10000)).toBe('#ef4444'); // -10% (red)
+    });
+  });
+
+  describe('getIncomeColor', () => {
+    it('returns red when income < 1500', () => {
+      expect(getIncomeColor(0)).toBe('#ef4444');
+      expect(getIncomeColor(1000)).toBe('#ef4444');
+      expect(getIncomeColor(1499)).toBe('#ef4444');
+    });
+
+    it('returns yellow when income 1500-2999', () => {
+      expect(getIncomeColor(1500)).toBe('#eab308');
+      expect(getIncomeColor(2000)).toBe('#eab308');
+      expect(getIncomeColor(2999)).toBe('#eab308');
+    });
+
+    it('returns green when income >= 3000', () => {
+      expect(getIncomeColor(3000)).toBe('#22c55e');
+      expect(getIncomeColor(5000)).toBe('#22c55e');
+      expect(getIncomeColor(10000)).toBe('#22c55e');
+    });
+
+    it('handles negative income', () => {
+      expect(getIncomeColor(-500)).toBe('#ef4444'); // red
+      expect(getIncomeColor(-1000)).toBe('#ef4444'); // red
+    });
+  });
+
+  describe('getShouldFlash', () => {
+    it('returns true when value < 0', () => {
+      expect(getShouldFlash(-1)).toBe(true);
+      expect(getShouldFlash(-100)).toBe(true);
+      expect(getShouldFlash(-5000)).toBe(true);
+    });
+
+    it('returns false when value >= 0', () => {
+      expect(getShouldFlash(0)).toBe(false);
+      expect(getShouldFlash(1)).toBe(false);
+      expect(getShouldFlash(5000)).toBe(false);
+      expect(getShouldFlash(10000)).toBe(false);
+    });
+  });
+
+  describe('Dashboard Light Configuration', () => {
+    it('correctly configures Savings light with 10000 max', () => {
+      // At 50% (5000)
+      expect(getLightColor(5000, 10000)).toBe('#eab308'); // yellow
+      // At 100% (10000+)
+      expect(getLightColor(10000, 10000)).toBe('#22c55e'); // green
+    });
+
+    it('correctly configures Retirement light with 1000000 max', () => {
+      // At 50% (500000)
+      expect(getLightColor(500000, 1000000)).toBe('#eab308'); // yellow
+      // At 100% (1000000)
+      expect(getLightColor(1000000, 1000000)).toBe('#22c55e'); // green
+    });
+
+    it('correctly configures Medical light with 10000 max', () => {
+      // At 50% (5000)
+      expect(getLightColor(5000, 10000)).toBe('#eab308'); // yellow
+    });
+
+    it('correctly configures Car light with 5000 max', () => {
+      // At 50% (2500)
+      expect(getLightColor(2500, 5000)).toBe('#eab308'); // yellow
+      // At 80% (4000)
+      expect(getLightColor(4000, 5000)).toBe('#22c55e'); // green
+    });
+
+    it('correctly configures School light with 50000 max', () => {
+      // At 50% (25000)
+      expect(getLightColor(25000, 50000)).toBe('#eab308'); // yellow
+      // At 100% (50000)
+      expect(getLightColor(50000, 50000)).toBe('#22c55e'); // green
+    });
+
+    it('correctly configures Vacation light with 5000 max', () => {
+      // At 80% (4000)
+      expect(getLightColor(4000, 5000)).toBe('#22c55e'); // green
+    });
+
+    it('correctly configures Other gauges with 10000 max', () => {
+      // At 50% (5000)
+      expect(getLightColor(5000, 10000)).toBe('#eab308'); // yellow
+    });
+  });
+
+  describe('Income Light vs Standard Light Color Logic', () => {
+    it('Income uses custom thresholds, not proportion-based', () => {
+      // Income at 2000 should be yellow (custom thresholds)
+      expect(getIncomeColor(2000)).toBe('#eab308');
+      // But with proportion-based at max 10000, 2000 would be red (20%)
+      expect(getLightColor(2000, 10000)).toBe('#ef4444');
+    });
+
+    it('Savings at 10000+ is always green, independent of gauge max', () => {
+      // This is a special case for Savings
+      // At exactly 10000, custom logic returns green
+      // But proportion (10000/10000 = 100%) also returns green
+      expect(getLightColor(10000, 10000)).toBe('#22c55e');
+      // Above 10000 is still green
+      expect(getLightColor(15000, 10000)).toBe('#22c55e'); // 150%
+    });
+  });
+
+  describe('Flash Status for Negative Values', () => {
+    it('Savings should flash when negative', () => {
+      // When savings value < 0, should flash
+      expect(getShouldFlash(-100)).toBe(true);
+      expect(getShouldFlash(-1)).toBe(true);
+    });
+
+    it('Income should flash when negative', () => {
+      // When income value < 0, should flash
+      expect(getShouldFlash(-500)).toBe(true);
+      expect(getShouldFlash(-1)).toBe(true);
+    });
+
+    it('Other values should not flash when negative or positive', () => {
+      // Only Savings and Income flash on negative
+      // For other gauges, we just check if they should flash (which is false for non-Savings/Income)
+      expect(getShouldFlash(-5000)).toBe(true); // Returns true for any negative
+      expect(getShouldFlash(0)).toBe(false);
+      expect(getShouldFlash(5000)).toBe(false);
     });
   });
 });

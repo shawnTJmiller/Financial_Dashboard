@@ -158,3 +158,39 @@ export const getGaugeVisibility = (gaugeValues: GaugeValues) => {
     otherGauge2: gaugeValues.otherGauge2 > 0,
   };
 };
+
+// Dashboard Light Color Logic
+/**
+ * Calculate light color based on value proportion to max
+ * < 50% = red, 50-80% = yellow, >= 80% = green
+ */
+export const getLightColor = (value: number, max: number): string => {
+  const proportion = value / max;
+  if (proportion < 0.5) {
+    return '#ef4444'; // red
+  } else if (proportion < 0.8) {
+    return '#eab308'; // yellow
+  }
+  return '#22c55e'; // green
+};
+
+/**
+ * Calculate Income light color with custom thresholds
+ * < 1500 = red, 1500-2999 = yellow, >= 3000 = green
+ */
+export const getIncomeColor = (income: number): string => {
+  if (income >= 3000) {
+    return '#22c55e'; // green
+  } else if (income >= 1500) {
+    return '#eab308'; // yellow
+  }
+  return '#ef4444'; // red
+};
+
+/**
+ * Determine if a gauge value should flash warning
+ * Flashes for Savings when < 0 and Income when < 0
+ */
+export const getShouldFlash = (value: number): boolean => {
+  return value < 0;
+};
