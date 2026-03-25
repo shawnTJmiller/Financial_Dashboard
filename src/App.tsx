@@ -160,6 +160,7 @@ export default function App() {
       label: 'Savings',
       color: gaugeValues.savings >= 10000 ? '#22c55e' : getLightColor(gaugeValues.savings, 10000),
       visible: gaugeVisibility.savings,
+      shouldFlash: gaugeValues.savings < 0,
     },
     {
       label: 'Retirement',
@@ -175,6 +176,7 @@ export default function App() {
       label: 'Income',
       color: gaugeValues.income >= 3000 ? '#22c55e' : gaugeValues.income >= 1500 ? '#eab308' : '#ef4444',
       visible: gaugeVisibility.income,
+      shouldFlash: gaugeValues.income < 0,
     },
     {
       label: 'Home',
