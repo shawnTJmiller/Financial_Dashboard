@@ -6,7 +6,6 @@ import {
   calculateSchoolInvestments,
   calculateNetIncome,
   allocateTierGauges,
-  calculateAllGauges,
   getGaugeVisibility,
 } from '../utils/calculations';
 import {

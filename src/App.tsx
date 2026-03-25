@@ -208,31 +208,7 @@ export default function App() {
     },
   ];
 
-  // Grid layout configuration: 10 columns x 7 rows
-  const gridItems = [
-    // Financial Fuel Gauge: 1,2,11,12
-    { pos: 1, label: 'Savings', rows: 2, cols: 2 },
-    // Retirement Gauge: 21,22,31,32
-    { pos: 21, label: 'Retirement', rows: 2, cols: 2 },
-    // Medical Gauge: 41,42,51,52
-    { pos: 41, label: 'Medical', rows: 2, cols: 2 },
-    // Income Tachometer: 13-16, 23-26, 33-36, 43-46 (4x4)
-    { pos: 13, label: 'Income', rows: 4, cols: 4 },
-    // Home Gauge: 7,8,17,18
-    { pos: 7, label: 'Home', rows: 2, cols: 2 },
-    // Car Gauge: 27,28,37,38
-    { pos: 27, label: 'Car', rows: 2, cols: 2 },
-    // School Gauge: 47,48,57,58
-    { pos: 47, label: 'School', rows: 2, cols: 2 },
-    // Vacation Gauge: 9,10,19,20
-    { pos: 9, label: 'Vacation', rows: 2, cols: 2 },
-    // Other Gauge #1: 29,30,39,40
-    { pos: 29, label: 'Other 1', rows: 2, cols: 2 },
-    // Other Gauge #2: 49,50,59,60
-    { pos: 49, label: 'Other 2', rows: 2, cols: 2 },
-    // Dashboard Lights: 61–70
-    { pos: 61, label: 'Lights', rows: 1, cols: 10 },
-  ];
+
 
   const renderLayoutContent = () => {
     if (panelPosition === 'left') {
@@ -311,11 +287,7 @@ const OutputGrid: React.FC<{
   dashboardLights: any[];
 }> = ({ gaugeValues, gaugeVisibility, dashboardLights }) => {
   // Helper to convert grid position (1-70) to CSS grid row/col
-  const getGridPosition = (pos: number) => {
-    const row = Math.floor((pos - 1) / 10) + 1;
-    const col = ((pos - 1) % 10) + 1;
-    return { row, col };
-  };
+
 
   return (
     <div className="grid gap-4 p-4" style={{
@@ -326,7 +298,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '1 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.savings}
           label="Savings"
           visible={gaugeVisibility.savings}
@@ -335,14 +307,14 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Income Gauge (positions 13-16, 23-26, 33-36, 43-46) */}
-      <div style={{ gridColumn: '4 / span 4', gridRow: '1 / span 4' }}>
+      <div style={{ gridColumn: '3 / span 4', gridRow: '1 / span 4' }}>
         <Gauge
           min={-50000}
           max={100000}
           value={gaugeValues.income}
           label="Net Income"
           visible={gaugeVisibility.income}
-          size={200}
+          size={400}
         />
       </div>
 
@@ -350,7 +322,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '9 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={20000}
+          max={5000}
           value={gaugeValues.vacation}
           label="Vacation"
           visible={gaugeVisibility.vacation}
@@ -358,11 +330,11 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Retirement Gauge (positions 21,22,31,32) */}
-      <div style={{ gridColumn: '1 / span 2', gridRow: '3 / span 2' }}>
+      {/* Retirement Gauge (positions 29,30,39,40) */}
+      <div style={{ gridColumn: '9 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={100000}
+          max={1000000}
           value={gaugeValues.retirement}
           label="Retirement"
           visible={gaugeVisibility.retirement}
@@ -374,7 +346,7 @@ const OutputGrid: React.FC<{
       <div style={{ gridColumn: '7 / span 2', gridRow: '1 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.home}
           label="Home"
           visible={gaugeVisibility.home}
@@ -383,10 +355,10 @@ const OutputGrid: React.FC<{
       </div>
 
       {/* Car Gauge (positions 27,28,37,38) */}
-      <div style={{ gridColumn: '3 / span 2', gridRow: '3 / span 2' }}>
+      <div style={{ gridColumn: '7 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={30000}
+          max={5000}
           value={gaugeValues.car}
           label="Car"
           visible={gaugeVisibility.car}
@@ -394,11 +366,11 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Medical Gauge (positions 41,42,51,52) */}
-      <div style={{ gridColumn: '1 / span 2', gridRow: '5 / span 2' }}>
+      {/* Medical Gauge (positions 47,48,57,58) */}
+      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.medical}
           label="Medical"
           visible={gaugeVisibility.medical}
@@ -406,8 +378,8 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* School Gauge (positions 47,48,57,58) */}
-      <div style={{ gridColumn: '5 / span 2', gridRow: '5 / span 2' }}>
+      {/* School Gauge (positions 49,50,59,60) */}
+      <div style={{ gridColumn: '9 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
           max={50000}
@@ -418,11 +390,11 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Other 1 Gauge (positions 29,30,39,40) */}
-      <div style={{ gridColumn: '3 / span 2', gridRow: '5 / span 2' }}>
+      {/* Other 1 Gauge (positions 21,22,31,32) */}
+      <div style={{ gridColumn: '1 / span 2', gridRow: '3 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.otherGauge1}
           label="Other 1"
           visible={gaugeVisibility.otherGauge1}
@@ -430,11 +402,11 @@ const OutputGrid: React.FC<{
         />
       </div>
 
-      {/* Other 2 Gauge (positions 49,50,59,60) */}
-      <div style={{ gridColumn: '7 / span 2', gridRow: '5 / span 2' }}>
+      {/* Other 2 Gauge (positions 41,42,51,52) */}
+      <div style={{ gridColumn: '1 / span 2', gridRow: '5 / span 2' }}>
         <Gauge
           min={0}
-          max={50000}
+          max={10000}
           value={gaugeValues.otherGauge2}
           label="Other 2"
           visible={gaugeVisibility.otherGauge2}
