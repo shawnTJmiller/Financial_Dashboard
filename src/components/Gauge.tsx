@@ -129,7 +129,7 @@ export const Gauge: React.FC<GaugeProps> = ({
     };
 
     const chartData = {
-      labels: ['Money Reserve', 'To Goal'],
+      labels: ['Money Reserved', 'To Goal'],
       datasets: [
         {
           data: [displayValue, Math.max(0, displayMax - displayValue)],

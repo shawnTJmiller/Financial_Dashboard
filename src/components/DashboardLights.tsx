@@ -24,6 +24,31 @@ const iconMap: Record<string, string> = {
   'Other 2': 'fa-battery',
 };
 
+const savingsToolTipText = "Savings is your rainy day fund.  It is\nimportant to have between 3-6 months\nof wages saved up.  Keeping around\n$10,000 for most incidents is safe.";
+const retirementToolTipText = "Retirement investments are crucial for\nyour financial future.  Contributing to\na 401(k) or IRA will help you in life\nafter work.";
+const medicalToolTipText = "Medical savings can help cover unexpected\nhealthcare costs.  Consider opening an HSA\nfor tax advantages or track your FSA savings\nhere.";
+const incomeToolTipText = "Income represents your regular earnings.\nKeep track of all income and debts to\nunderstand your financial picture.";
+const homeToolTipText = "After you have saved your emergency fund,\nstart saving for your home.  These funds can\nbe used towards a down payment, updates,\nor much needed repairs.";
+const carToolTipText = "Now that your home is covered for emergency\nexpenses, you can start putting aside funds for\nyour next vehicle or for unexpected repairs.";
+const schoolToolTipText = "School investments can help fund your\nchild's education.  Consider 529 plans or\nother education savings options.";
+const vacationToolTipText = "This fills after your savings, home and\ncar funds have been taken care of.\nSaving up for a vacation rewards you\nfor all of the hard work you put in to\nget to this point.";
+const other1ToolTipText = "When you start filling this it means\nyou have a lot of your bases covered.\nUse this fund for special projects or\nkeep building up your savings.";
+const other2ToolTipText = "When you start filling this it means you\nhave not only your bases covered but\nalso extra funds available.  After this is\nfilled all future monies go toward your\nSavings!  GREAT JOB!!!";
+
+// Map gauge labels to custom tooltip text
+const tooltipMap: Record<string, string> = {
+  'Savings': savingsToolTipText,
+  'Retirement': retirementToolTipText,
+  'Medical': medicalToolTipText,
+  'Income': incomeToolTipText,
+  'Home': homeToolTipText,
+  'Car': carToolTipText,
+  'School': schoolToolTipText,
+  'Vacation': vacationToolTipText,
+  'Other 1': other1ToolTipText,
+  'Other 2': other2ToolTipText,
+};
+
 const flashingStyle = `
   @keyframes flashRed {
     0%, 100% {
@@ -48,9 +73,10 @@ export const DashboardLights: React.FC<DashboardLightsProps> = ({ lights }) => {
         {lights.map((light, idx) => {
           const iconClass = iconMap[light.label] || 'fa-circle';
           const isFlashing = light.shouldFlash && light.visible;
+          const tooltipText = tooltipMap[light.label] || light.label;
           
           return (
-            <div key={idx} className="flex flex-col items-center" title={light.label}>
+            <div key={idx} className="flex flex-col items-center" title={tooltipText}>
               <i
                 className={`fa ${iconClass} text-2xl ${isFlashing ? 'flashing-icon' : ''}`}
                 style={{
