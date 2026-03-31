@@ -44,7 +44,7 @@ export default function App() {
     },
   ]);
 
-  const [panelPosition, setPanelPosition] = useState<'left' | 'top' | 'right' | 'bottom'>('left');
+  const [isInputPanelExpanded, setIsInputPanelExpanded] = useState(false);
   const [showFuelWarning, setShowFuelWarning] = useState(false);
   const [showIncomeWarning, setShowIncomeWarning] = useState(false);
   const [showDebtsWarning, setShowDebtsWarning] = useState(false);
@@ -206,33 +206,9 @@ export default function App() {
 
 
   const renderLayoutContent = () => {
-    if (panelPosition === 'left') {
+    // When input panel is expanded, show it full screen
+    if (isInputPanelExpanded) {
       return (
-        <div className="flex gap-4 h-full">
-          <div className="w-96 flex-shrink-0">
-            <InputPanel
-              fuelRows={fuelRows}
-              incomeRows={incomeRows}
-              debtsRows={debtsRows}
-              onFuelChange={handleFuelChange}
-              onIncomeChange={handleIncomeChange}
-              onDebtsChange={handleDebtsChange}
-              onFuelAddClick={handleFuelAddClick}
-              onIncomeAddClick={handleIncomeAddClick}
-              onDebtsAddClick={handleDebtsAddClick}
-              showFuelWarning={showFuelWarning}
-              showIncomeWarning={showIncomeWarning}
-              showDebtsWarning={showDebtsWarning}
-            />
-          </div>
-          <div className="flex-1 overflow-auto">
-            <OutputGrid gaugeValues={gaugeValues} gaugeVisibility={gaugeVisibility} dashboardLights={dashboardLights} />
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div>
         <InputPanel
           fuelRows={fuelRows}
           incomeRows={incomeRows}
@@ -246,8 +222,34 @@ export default function App() {
           showFuelWarning={showFuelWarning}
           showIncomeWarning={showIncomeWarning}
           showDebtsWarning={showDebtsWarning}
+          isExpanded={isInputPanelExpanded}
+          onToggleExpand={() => setIsInputPanelExpanded(!isInputPanelExpanded)}
         />
-        <div className="mt-4">
+      );
+    }
+
+    // Default layout: input panel on left, output grid on right
+    return (
+      <div className="flex gap-4 h-full">
+        <div className="w-96 flex-shrink-0">
+          <InputPanel
+            fuelRows={fuelRows}
+            incomeRows={incomeRows}
+            debtsRows={debtsRows}
+            onFuelChange={handleFuelChange}
+            onIncomeChange={handleIncomeChange}
+            onDebtsChange={handleDebtsChange}
+            onFuelAddClick={handleFuelAddClick}
+            onIncomeAddClick={handleIncomeAddClick}
+            onDebtsAddClick={handleDebtsAddClick}
+            showFuelWarning={showFuelWarning}
+            showIncomeWarning={showIncomeWarning}
+            showDebtsWarning={showDebtsWarning}
+            isExpanded={isInputPanelExpanded}
+            onToggleExpand={() => setIsInputPanelExpanded(!isInputPanelExpanded)}
+          />
+        </div>
+        <div className="flex-1 overflow-auto">
           <OutputGrid gaugeValues={gaugeValues} gaugeVisibility={gaugeVisibility} dashboardLights={dashboardLights} />
         </div>
       </div>
@@ -257,18 +259,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 p-4">
       {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6">
         <h1 className="text-4xl font-bold text-gray-100">Financial Dashboard</h1>
-        <select
-          value={panelPosition}
-          onChange={e => setPanelPosition(e.target.value as any)}
-          className="bg-gray-800 text-gray-100 px-3 py-2 rounded border border-gray-700"
-        >
-          <option value="left">Panel Left</option>
-          <option value="top">Panel Top</option>
-          <option value="right">Panel Right</option>
-          <option value="bottom">Panel Bottom</option>
-        </select>
       </div>
 
       {renderLayoutContent()}

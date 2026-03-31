@@ -14,6 +14,8 @@ interface InputPanelProps {
   showFuelWarning?: boolean;
   showIncomeWarning?: boolean;
   showDebtsWarning?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
 export const InputPanel: React.FC<InputPanelProps> = ({
@@ -29,6 +31,8 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   showFuelWarning = false,
   showIncomeWarning = false,
   showDebtsWarning = false,
+  isExpanded = false,
+  onToggleExpand,
 }) => {
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     fuel: false,
@@ -121,7 +125,16 @@ export const InputPanel: React.FC<InputPanelProps> = ({
 
   return (
     <div className="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
-      <h2 className="text-2xl font-bold text-gray-100 mb-6">Financial Input</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-100">Financial Input</h2>
+        <button
+          onClick={onToggleExpand}
+          className="bg-gray-800 hover:bg-gray-700 text-gray-100 px-3 py-1 rounded border border-gray-600 text-sm font-medium transition-colors"
+          title={isExpanded ? 'Contract panel' : 'Expand panel'}
+        >
+          {isExpanded ? '⊖' : '⊕'}
+        </button>
+      </div>
 
       <TableSection
         title="Financial Fuel"
