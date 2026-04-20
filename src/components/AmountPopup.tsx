@@ -57,9 +57,10 @@ export const AmountPopup: React.FC<AmountPopupProps> = ({
     const parsed = parseAmount(display);
     if (!allowNegative && parsed < 0) {
       setError('Negative values not allowed');
-      return;
+      return false;
     }
     onSave(parsed);
+    return true;
   }, [display, allowNegative, onSave]);
 
   useEffect(() => {
@@ -67,7 +68,12 @@ export const AmountPopup: React.FC<AmountPopupProps> = ({
       if (e.key === 'Escape') {
         onCancel();
       } else if (e.key === 'Enter') {
-        handleSave();
+        e.preventDefault();
+        // Save and close the popup on successful save
+        const success = handleSave();
+        if (success) {
+          onCancel();
+        }
       } else if (/\d/.test(e.key)) {
         e.preventDefault();
         handleNumberClick(e.key);
