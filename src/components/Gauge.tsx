@@ -39,12 +39,13 @@ export const Gauge: React.FC<GaugeProps> = ({
       chartRef.current.destroy();
     }
 
-    // Clamp value between min and max
+    // Clamp value between min and max for chart rendering
     const clampedValue = Math.max(min, Math.min(max, value));
     
     // Special handling for Savings gauge - dynamically adjust max when savings exceeds default
     let displayMax: number;
     let displayValue: number;
+    let displayValueForChart: number;
     
     if (label === 'Savings') {
       // For Savings gauge, default max is always 10000 unless value exceeds it
@@ -62,15 +63,18 @@ export const Gauge: React.FC<GaugeProps> = ({
       displayValue = clampedValue;
     }
     
+    // For chart rendering, show 0 for negative values (but text display shows actual negative value)
+    displayValueForChart = Math.max(0, displayValue);
+    
     const maxLabel = displayValue > displayMax ? displayValue : displayMax;
 
-    // Calculate color stops
+    // Calculate color stops based on display value
     let yellowColorStop = config.baseYellowColorStop;
     let greenColorStop = config.baseGreenColorStop;
 
-    if (displayValue > displayMax) {
-      yellowColorStop *= (displayMax / displayValue) * config.baseYellowColorStop;
-      greenColorStop = (displayMax / displayValue) * config.baseGreenColorStop;
+    if (displayValueForChart > displayMax) {
+      yellowColorStop *= (displayMax / displayValueForChart) * config.baseYellowColorStop;
+      greenColorStop = (displayMax / displayValueForChart) * config.baseGreenColorStop;
     }
 
     // Create gradient
@@ -132,7 +136,7 @@ export const Gauge: React.FC<GaugeProps> = ({
       labels: ['Money Reserved', 'To Goal'],
       datasets: [
         {
-          data: [displayValue, Math.max(0, displayMax - displayValue)],
+          data: [displayValueForChart, Math.max(0, displayMax - displayValueForChart)],
           backgroundColor: [gradientSegment, 'rgba(0, 0, 0, 0.2)'],
           borderColor: [gradientSegment, 'rgba(0, 0, 0, 1)'],
           borderWidth: 0,
