@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputPanel } from './components/InputPanel';
 import { Gauge } from './components/Gauge';
 import { DashboardLights } from './components/DashboardLights';
+import { ConsentBanner } from './components/ConsentBanner';
 import { TableRow } from './components/TableSection';
 import {
   calculateAllGauges,
@@ -12,8 +13,14 @@ import {
   GaugeValues,
 } from './utils/calculations';
 import { hasDefaultNewRow } from './utils/validation';
+import { useCookieConsent } from './hooks/useCookieConsent';
+import { useDashboardStorage } from './hooks/useDashboardStorage';
 
 export default function App() {
+  // Hooks for consent and storage management
+  const { isLoaded: consentLoaded, setCookieConsent, hasPreviousConsent, isFunctionalEnabled } = useCookieConsent();
+  const { loadData, saveData, hasLoadedData, setHasLoadedData } = useDashboardStorage();
+
   const [fuelRows, setFuelRows] = useState<TableRow[]>([
     {
       id: '1',
@@ -48,6 +55,32 @@ export default function App() {
   const [showFuelWarning, setShowFuelWarning] = useState(false);
   const [showIncomeWarning, setShowIncomeWarning] = useState(false);
   const [showDebtsWarning, setShowDebtsWarning] = useState(false);
+
+  // Load saved data when consent is available and functional cookies are enabled
+  useEffect(() => {
+    if (consentLoaded && isFunctionalEnabled && !hasLoadedData) {
+      const savedData = loadData();
+      if (savedData) {
+        setFuelRows(savedData.fuelRows);
+        setIncomeRows(savedData.incomeRows);
+        setDebtsRows(savedData.debtsRows);
+        setHasLoadedData(true);
+      }
+    } else if (consentLoaded && !isFunctionalEnabled) {
+      setHasLoadedData(true);
+    }
+  }, [consentLoaded, isFunctionalEnabled, loadData, hasLoadedData, setHasLoadedData]);
+
+  // Auto-save data to localStorage whenever rows change (if consent given)
+  useEffect(() => {
+    if (isFunctionalEnabled && consentLoaded && hasLoadedData) {
+      saveData({
+        fuelRows,
+        incomeRows,
+        debtsRows,
+      });
+    }
+  }, [fuelRows, incomeRows, debtsRows, isFunctionalEnabled, consentLoaded, hasLoadedData, saveData]);
 
   // Convert rows to calculation format
   const fuelCalcRows = fuelRows.map(row => ({
@@ -256,6 +289,22 @@ export default function App() {
     );
   };
 
+  const handleAcceptConsent = () => {
+    setCookieConsent(true);
+    setHasLoadedData(true);
+    const savedData = loadData();
+    if (savedData) {
+      setFuelRows(savedData.fuelRows);
+      setIncomeRows(savedData.incomeRows);
+      setDebtsRows(savedData.debtsRows);
+    }
+  };
+
+  const handleDeclineConsent = () => {
+    setCookieConsent(false);
+    setHasLoadedData(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 p-4">
       {/* Header */}
@@ -264,6 +313,11 @@ export default function App() {
       </div>
 
       {renderLayoutContent()}
+
+      {/* Show consent banner if no previous consent has been given */}
+      {consentLoaded && !hasPreviousConsent() && (
+        <ConsentBanner onAccept={handleAcceptConsent} onDecline={handleDeclineConsent} />
+      )}
     </div>
   );
 }
