@@ -81,7 +81,7 @@ export const MobileGaugeView: React.FC<MobileGaugeViewProps> = ({
   const isGaugeOnLeft = landscapeLayoutMode === 'gauge-left';
   
   const gaugeSection = (
-    <div className={`${isGaugeOnLeft ? 'w-[66.67vw]' : 'w-[33.33vw]'} flex items-center justify-center bg-gray-900 p-2`}>
+    <div className={`${isGaugeOnLeft ? 'w-[66.67vw]' : 'w-[66vw]'} flex items-center justify-center bg-gray-900 p-2`}>
       <Gauge
         min={0}
         max={10000}
@@ -94,7 +94,7 @@ export const MobileGaugeView: React.FC<MobileGaugeViewProps> = ({
   );
 
   const lightsSection = (
-    <div className={`${isGaugeOnLeft ? 'w-[33.33vw]' : 'w-[66.67vw]'} bg-gray-800 p-2 overflow-auto flex flex-col`}>
+    <div className={`${isGaugeOnLeft ? 'w-[33.3vw]' : 'w-[33.33vw]'} bg-gray-800 p-2 overflow-auto flex flex-col`}>
       {/* Status Lights header */}
       <h3 className="text-lg font-bold text-gray-100 mb-2">Status Lights</h3>
       
