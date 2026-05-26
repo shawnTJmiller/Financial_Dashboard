@@ -3,6 +3,7 @@ import { InputPanel } from './components/InputPanel';
 import { Gauge } from './components/Gauge';
 import { DashboardLights } from './components/DashboardLights';
 import { ConsentBanner } from './components/ConsentBanner';
+import { MobileGaugeView } from './components/MobileGaugeView';
 import { TableRow } from './components/TableSection';
 import {
   calculateAllGauges,
@@ -15,11 +16,20 @@ import {
 import { hasDefaultNewRow } from './utils/validation';
 import { useCookieConsent } from './hooks/useCookieConsent';
 import { useDashboardStorage } from './hooks/useDashboardStorage';
+import { useResponsiveLayout } from './hooks/useResponsiveLayout';
 
 export default function App() {
   // Hooks for consent and storage management
   const { isLoaded: consentLoaded, setCookieConsent, hasPreviousConsent, isFunctionalEnabled } = useCookieConsent();
   const { loadData, saveData, hasLoadedData, setHasLoadedData } = useDashboardStorage();
+  
+  // Responsive layout hook
+  const viewport = useResponsiveLayout();
+
+  // Mobile view state
+  const [showMobileGaugeView, setShowMobileGaugeView] = useState(false);
+  const [selectedMobileGauge, setSelectedMobileGauge] = useState('Savings');
+  const [landscapeLayoutMode, setLandscapeLayoutMode] = useState<'gauge-left' | 'gauge-right'>('gauge-left');
 
   const [fuelRows, setFuelRows] = useState<TableRow[]>([
     {
@@ -305,6 +315,70 @@ export default function App() {
     setHasLoadedData(true);
   };
 
+  // Mobile layout rendering
+  if (viewport.isMobile) {
+    return (
+      <div className="min-h-[100vh] bg-gradient-to-br from-gray-950 to-gray-900 relative">
+        {/* Toggle Buttons in upper right */}
+        <button
+          onClick={() => setShowMobileGaugeView(!showMobileGaugeView)}
+          className="fixed top-4 right-4 z-40 bg-blue-700 hover:bg-blue-600 text-white p-2 rounded-lg"
+        >
+          <i className={`fas ${showMobileGaugeView ? 'fa-pen' : 'fa-gauge'} text-xl`}></i>
+        </button>
+        
+        {/* Layout toggle button for landscape gauge view */}
+        {showMobileGaugeView && !viewport.isPortrait && (
+          <button
+            onClick={() => setLandscapeLayoutMode(landscapeLayoutMode === 'gauge-left' ? 'gauge-right' : 'gauge-left')}
+            className="fixed top-4 right-16 z-40 bg-blue-700 hover:bg-blue-600 text-white p-2 rounded-lg"
+          >
+            <i className={`fas ${landscapeLayoutMode === 'gauge-left' ? 'fa-arrow-left' : 'fa-arrow-right'} text-xl`}></i>
+          </button>
+        )}
+
+        {/* Mobile views */}
+        {!showMobileGaugeView ? (
+          // Input Panel view
+          <div className="pt-[4rem] pb-[20vh]">
+            <InputPanel
+              fuelRows={fuelRows}
+              incomeRows={incomeRows}
+              debtsRows={debtsRows}
+              onFuelChange={handleFuelChange}
+              onIncomeChange={handleIncomeChange}
+              onDebtsChange={handleDebtsChange}
+              onFuelAddClick={handleFuelAddClick}
+              onIncomeAddClick={handleIncomeAddClick}
+              onDebtsAddClick={handleDebtsAddClick}
+              showFuelWarning={showFuelWarning}
+              showIncomeWarning={showIncomeWarning}
+              showDebtsWarning={showDebtsWarning}
+              isExpanded={isInputPanelExpanded}
+              onToggleExpand={() => setIsInputPanelExpanded(!isInputPanelExpanded)}
+            />
+          </div>
+        ) : (
+          // Gauge view
+          <MobileGaugeView
+            selectedGaugeLabel={selectedMobileGauge}
+            gaugeValues={gaugeValues}
+            dashboardLights={dashboardLights}
+            isPortrait={viewport.isPortrait}
+            onLightSelect={setSelectedMobileGauge}
+            landscapeLayoutMode={landscapeLayoutMode}
+          />
+        )}
+
+        {/* Consent banner */}
+        {consentLoaded && !hasPreviousConsent() && (
+          <ConsentBanner onAccept={handleAcceptConsent} onDecline={handleDeclineConsent} />
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout rendering
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 p-4">
       {/* Header */}

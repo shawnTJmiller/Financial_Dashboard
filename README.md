@@ -7,11 +7,12 @@ A production-ready, pure static Single Page Application for financial management
 - **Pure Static SPA**: No backend, APIs, or persistence required
 - **Real-time Calculations**: Dynamic gauge and dashboard updates
 - **Modular Architecture**: Clean component-based structure
-- **Responsive Design**: Works across different screen sizes
+- **Mobile Responsive Design**: Optimized layouts for portrait and landscape mobile views
 - **Chart.js Gauges**: Doughnut-style gauge visualizations with dashed backgrounds
 - **Font Awesome Icons**: Elegant status light indicators
 - **Type-Safe**: Built with TypeScript
 - **Well-Tested**: Comprehensive unit tests including dashboard light color logic
+- **Responsive Sizing**: All dimensions use relative units (rem, em, %, vh, vw)
 
 ## Technology Stack
 
@@ -78,21 +79,27 @@ All 55 tests validate core business logic and UI indicator behavior.
 
 ```
 ├── src/
-│   ├── components/          # React components
-│   │   ├── AmountPopup.tsx  # Calculator popup
-│   │   ├── Gauge.tsx        # Chart.js doughnut gauge component
-│   │   ├── TableSection.tsx # Data table component
-│   │   ├── DashboardLights.tsx # Font Awesome status light icons
-│   │   └── InputPanel.tsx   # Main input section
+│   ├── components/              # React components
+│   │   ├── AmountPopup.tsx      # Calculator popup
+│   │   ├── Gauge.tsx            # Chart.js doughnut gauge component
+│   │   ├── TableSection.tsx     # Data table component
+│   │   ├── DashboardLights.tsx  # Font Awesome status light icons
+│   │   ├── InputPanel.tsx       # Main input section
+│   │   ├── MobileGaugeView.tsx  # Mobile-optimized gauge view (portrait/landscape)
+│   │   └── ConsentBanner.tsx    # Cookie consent banner
+│   ├── hooks/
+│   │   ├── useCookieConsent.ts  # Cookie consent management
+│   │   ├── useDashboardStorage.ts # localStorage persistence
+│   │   └── useResponsiveLayout.ts # Responsive viewport tracking
 │   ├── utils/
-│   │   ├── calculations.ts  # Core calculation logic & light color functions
-│   │   ├── gaugeConfig.ts   # Gauge visual configuration settings
-│   │   └── validation.ts    # Validation utilities
+│   │   ├── calculations.ts      # Core calculation logic & light color functions
+│   │   ├── gaugeConfig.ts       # Gauge visual configuration settings
+│   │   └── validation.ts        # Validation utilities
 │   ├── tests/
 │   │   └── calculations.test.ts # Unit tests including dashboard light tests
-│   ├── App.tsx              # Main app component
-│   ├── main.tsx             # Entry point
-│   └── index.css            # Global styles
+│   ├── App.tsx                  # Main app component with mobile/desktop routing
+│   ├── main.tsx                 # Entry point
+│   └── index.css                # Global styles with relative units
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
@@ -229,6 +236,72 @@ Three utility functions in [src/utils/calculations.ts](src/utils/calculations.ts
    - Returns true when value < 0 (for Savings and Income)
    - Returns false for all non-negative values
 
+## Mobile Responsive Design
+
+The application provides optimized layouts for mobile and desktop viewing experiences.
+
+### Responsive Layout Hook
+
+**[useResponsiveLayout.ts](src/hooks/useResponsiveLayout.ts)** tracks viewport information:
+- **Device Size**: Mobile (≤768px), Tablet (768-1024px), Desktop (>1024px)
+- **Orientation**: Portrait (height > width) or Landscape (height ≤ width)
+- Returns `ViewportInfo` object with boolean flags for conditional rendering
+
+### Mobile Views
+
+#### Desktop Layout
+- Input Panel on left side
+- Gauges and Dashboard Lights on right side
+- Fixed side-by-side layout (unchanged from original)
+
+#### Mobile Portrait Mode
+- **Default View**: Input Panel visible with data entry fields
+- **Input Panel**: Full-width form for entering financial data
+- **Toggle Button**: Gauge icon (⊕) in upper right corner
+- **Gauge View**: Shows one selected gauge at full top 1/2 screen
+- **Dashboard Lights**: 2×5 grid in bottom 1/3 with no labels
+- **Light Selection**: Click any active light to switch the displayed gauge
+- **Visual Indicator**: White rounded border on selected light
+
+#### Mobile Landscape Mode
+- **Default View**: Input Panel visible
+- **Toggle Buttons**: Two buttons in upper right corner
+  - **Gauge icon (⊕)**: Switch between Input Panel and Gauge view
+  - **Arrow icon (← or →)**: Swap layout between gauge-left and gauge-right positions
+- **Gauge View Default (Gauge Left)**: 
+  - Selected gauge displayed in left 2/3 of screen
+  - Dashboard Lights in right 1/4 with 2-column grid and no labels
+- **Gauge View Alternative (Gauge Right)**:
+  - Dashboard Lights displayed in left 2/3 of screen (centered vertically)
+  - Selected gauge in right 1/4 of screen
+- **Layout Toggle**: 
+  - Shows **left arrow (←)** when gauge is on left → click to move gauge right
+  - Shows **right arrow (→)** when gauge is on right → click to move gauge left
+- **Dashboard Lights Header**: "Status Lights" title always visible
+- **Light Selection**: Click any active light to switch the displayed gauge
+- **Visual Indicator**: White rounded border on selected light
+
+### DashboardLights Selection State
+
+[DashboardLights.tsx](src/components/DashboardLights.tsx) now supports:
+- **`selectedLabel` prop**: Highlights active gauge with white border and rounded corners
+- **`onLightClick` callback**: Handles light selection for gauge switching
+- **`hideLabels` prop**: Hides text labels on mobile to save space
+- **Active vs Inactive**: Only visible, non-negative lights are clickable
+
+### Responsive Sizing
+
+All dimensions use relative units for better accessibility and scaling:
+- **rem**: Root-relative sizing for typography and spacing
+- **em**: Text-relative sizing for flexible components
+- **%**: Percentage-based widths and heights
+- **vh/vw**: Viewport-relative sizing for full-screen mobile views
+
+Example conversions:
+- `8px` → `0.5rem` (scrollbar width)
+- `${size}px` → `${size / 16}rem` (gauge canvas height)
+- `100px` → `20vh` (mobile bottom padding)
+
 ## Performance
 
 - **No external API calls**: All calculations are local
@@ -251,4 +324,4 @@ This project is part of a financial dashboard application suite.
 - Multiple dashboard presets
 - Additional gauge customization
 - Advanced reporting features
-- Responsive design supports mobile and desktop
+- Data persistence across sessions (localStorage + cookies)

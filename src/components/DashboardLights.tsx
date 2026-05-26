@@ -8,6 +8,9 @@ interface DashboardLightsProps {
     visible: boolean;
     shouldFlash?: boolean;
   }[];
+  selectedLabel?: string;
+  onLightClick?: (label: string) => void;
+  hideLabels?: boolean;
 }
 
 // Map gauge labels to Font Awesome icon names
@@ -64,7 +67,14 @@ const flashingStyle = `
   }
 `;
 
-export const DashboardLights: React.FC<DashboardLightsProps> = ({ lights }) => {
+export const DashboardLights: React.FC<DashboardLightsProps> = ({ 
+  lights, 
+  selectedLabel,
+  onLightClick,
+  hideLabels = false,
+}) => {
+  const isSelectable = !!onLightClick;
+
   return (
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
       <style>{flashingStyle}</style>
@@ -74,16 +84,33 @@ export const DashboardLights: React.FC<DashboardLightsProps> = ({ lights }) => {
           const iconClass = iconMap[light.label] || 'fa-circle';
           const isFlashing = light.shouldFlash && light.visible;
           const tooltipText = tooltipMap[light.label] || light.label;
+          const isSelected = selectedLabel === light.label;
+          const isActive = light.visible && !light.shouldFlash; // Active lights are visible and not negative
           
           return (
-            <div key={idx} className="flex flex-col items-center" title={tooltipText}>
+            <div 
+              key={idx} 
+              className={`flex flex-col items-center ${
+                isSelectable && isActive ? 'cursor-pointer' : ''
+              } ${
+                isSelected ? 'p-2 border-2 border-white rounded-lg' : ''
+              }`}
+              title={tooltipText}
+              onClick={() => {
+                if (isSelectable && isActive) {
+                  onLightClick?.(light.label);
+                }
+              }}
+            >
               <i
                 className={`fa ${iconClass} text-2xl ${isFlashing ? 'flashing-icon' : ''}`}
                 style={{
                   color: !isFlashing && light.visible ? light.color : isFlashing ? undefined : '#404040',
                 }}
               />
-              <p className="text-xs text-gray-400 mt-2 text-center truncate w-full">{light.label}</p>
+              {!hideLabels && (
+                <p className="text-xs text-gray-400 mt-2 text-center truncate w-full">{light.label}</p>
+              )}
             </div>
           );
         })}
