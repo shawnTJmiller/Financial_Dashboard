@@ -176,7 +176,7 @@ export const Gauge: React.FC<GaugeProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      <div style={{ width: '100%', height: `${size}px`, position: 'relative' }}>
+      <div style={{ width: '100%', height: `${size / 16}rem`, position: 'relative' }}>
         <canvas
           ref={canvasRef}
           style={{
