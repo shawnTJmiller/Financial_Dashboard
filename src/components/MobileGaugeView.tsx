@@ -9,6 +9,7 @@ interface MobileGaugeViewProps {
   dashboardLights: any[];
   isPortrait: boolean;
   onLightSelect: (label: string) => void;
+  landscapeLayoutMode?: 'gauge-left' | 'gauge-right';
 }
 
 /**
@@ -21,6 +22,7 @@ export const MobileGaugeView: React.FC<MobileGaugeViewProps> = ({
   dashboardLights,
   isPortrait,
   onLightSelect,
+  landscapeLayoutMode = 'gauge-left',
 }) => {
   // Find the selected gauge's value
   const selectedValue = (gaugeValues as any)[
@@ -75,23 +77,29 @@ export const MobileGaugeView: React.FC<MobileGaugeViewProps> = ({
     );
   }
 
-  // Landscape view
-  return (
-    <div className="flex h-[100vh]">
-      {/* Gauge - left 2/3 */}
-      <div className="w-[66.67vw] flex items-center justify-center bg-gray-900 p-2">
-        <Gauge
-          min={0}
-          max={10000}
-          value={selectedValue}
-          label={selectedGaugeLabel}
-          visible={true}
-          size={240}
-        />
-      </div>
+  // Landscape view - supports both gauge-left and gauge-right layouts
+  const isGaugeOnLeft = landscapeLayoutMode === 'gauge-left';
+  
+  const gaugeSection = (
+    <div className={`${isGaugeOnLeft ? 'w-[66.67vw]' : 'w-[33.33vw]'} flex items-center justify-center bg-gray-900 p-2`}>
+      <Gauge
+        min={0}
+        max={10000}
+        value={selectedValue}
+        label={selectedGaugeLabel}
+        visible={true}
+        size={240}
+      />
+    </div>
+  );
 
-      {/* Dashboard Lights - right 1/4 */}
-      <div className="w-[33.33vw] bg-gray-800 p-2 overflow-auto">
+  const lightsSection = (
+    <div className={`${isGaugeOnLeft ? 'w-[33.33vw]' : 'w-[66.67vw]'} bg-gray-800 p-2 overflow-auto flex flex-col`}>
+      {/* Status Lights header */}
+      <h3 className="text-lg font-bold text-gray-100 mb-2">Status Lights</h3>
+      
+      {/* Centered lights grid */}
+      <div className="flex-1 flex items-center justify-center">
         <div className="grid grid-cols-2 gap-2">
           {dashboardLights.map((light, idx) => {
             const iconMap: Record<string, string> = {
@@ -136,6 +144,13 @@ export const MobileGaugeView: React.FC<MobileGaugeViewProps> = ({
           })}
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-[100vh]">
+      {isGaugeOnLeft ? gaugeSection : lightsSection}
+      {isGaugeOnLeft ? lightsSection : gaugeSection}
 
       {/* Flashing animation style */}
       <style>{`

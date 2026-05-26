@@ -29,6 +29,7 @@ export default function App() {
   // Mobile view state
   const [showMobileGaugeView, setShowMobileGaugeView] = useState(false);
   const [selectedMobileGauge, setSelectedMobileGauge] = useState('Savings');
+  const [landscapeLayoutMode, setLandscapeLayoutMode] = useState<'gauge-left' | 'gauge-right'>('gauge-left');
 
   const [fuelRows, setFuelRows] = useState<TableRow[]>([
     {
@@ -318,13 +319,23 @@ export default function App() {
   if (viewport.isMobile) {
     return (
       <div className="min-h-[100vh] bg-gradient-to-br from-gray-950 to-gray-900 relative">
-        {/* Toggle Button in upper right */}
+        {/* Toggle Buttons in upper right */}
         <button
           onClick={() => setShowMobileGaugeView(!showMobileGaugeView)}
           className="fixed top-4 right-4 z-40 bg-blue-700 hover:bg-blue-600 text-white p-2 rounded-lg"
         >
           <i className={`fas ${showMobileGaugeView ? 'fa-pen' : 'fa-gauge'} text-xl`}></i>
         </button>
+        
+        {/* Layout toggle button for landscape gauge view */}
+        {showMobileGaugeView && !viewport.isPortrait && (
+          <button
+            onClick={() => setLandscapeLayoutMode(landscapeLayoutMode === 'gauge-left' ? 'gauge-right' : 'gauge-left')}
+            className="fixed top-4 right-16 z-40 bg-blue-700 hover:bg-blue-600 text-white p-2 rounded-lg"
+          >
+            <i className={`fas ${landscapeLayoutMode === 'gauge-left' ? 'fa-arrow-left' : 'fa-arrow-right'} text-xl`}></i>
+          </button>
+        )}
 
         {/* Mobile views */}
         {!showMobileGaugeView ? (
@@ -355,6 +366,7 @@ export default function App() {
             dashboardLights={dashboardLights}
             isPortrait={viewport.isPortrait}
             onLightSelect={setSelectedMobileGauge}
+            landscapeLayoutMode={landscapeLayoutMode}
           />
         )}
 

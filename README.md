@@ -265,10 +265,20 @@ The application provides optimized layouts for mobile and desktop viewing experi
 
 #### Mobile Landscape Mode
 - **Default View**: Input Panel visible
-- **Toggle Button**: Gauge icon (⊕) in upper right corner
-- **Gauge View**: Selected gauge displayed in left 2/3 of screen
-- **Dashboard Lights**: 2-column vertical grid in right 1/4 with no labels
-- **Light Selection**: Click active lights to switch gauges
+- **Toggle Buttons**: Two buttons in upper right corner
+  - **Gauge icon (⊕)**: Switch between Input Panel and Gauge view
+  - **Arrow icon (← or →)**: Swap layout between gauge-left and gauge-right positions
+- **Gauge View Default (Gauge Left)**: 
+  - Selected gauge displayed in left 2/3 of screen
+  - Dashboard Lights in right 1/4 with 2-column grid and no labels
+- **Gauge View Alternative (Gauge Right)**:
+  - Dashboard Lights displayed in left 2/3 of screen (centered vertically)
+  - Selected gauge in right 1/4 of screen
+- **Layout Toggle**: 
+  - Shows **left arrow (←)** when gauge is on left → click to move gauge right
+  - Shows **right arrow (→)** when gauge is on right → click to move gauge left
+- **Dashboard Lights Header**: "Status Lights" title always visible
+- **Light Selection**: Click any active light to switch the displayed gauge
 - **Visual Indicator**: White rounded border on selected light
 
 ### DashboardLights Selection State
